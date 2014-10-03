@@ -205,8 +205,62 @@ def package_module(manifest,mf,config):
 	if os.path.exists(exports_file):
 		zf.write(exports_file, '%s/%s' % (modulepath, exports_file))
 	zf.close()
+	
+def ensure_dev_path(debug=True):
+	rc = subprocess.call(["xcode-select", "-print-path"], stdout=open(os.devnull, 'w'), stderr=open(os.devnull, 'w'))
+	if rc == 0 :
+		return
+	if debug:
+		print '[INFO] XCode 4.3+ likely. Searching for developer folders.'
+	trypath = '/Developer'
+	if os.path.isdir(trypath):
+		os.putenv('DEVELOPER_DIR',trypath)
+		return
+	trypath = '/Applications/Xcode.app/Contents/Developer'
+	if os.path.isdir(trypath):
+		os.putenv('DEVELOPER_DIR',trypath)
+		return
+	spotlight_args = ['mdfind','kMDItemDisplayName==Xcode&&kMDItemKind==Application']
+	spotlight = subprocess.Popen(spotlight_args, stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
+	for line in spotlight.stdout.readlines():
+		trypath = line.rstrip()+'/Contents/Developer'
+		if os.path.isdir(trypath):
+			os.putenv('DEVELOPER_DIR',trypath)
+			return
 
+SPLICE_START_MARKER="TI_AUTOGEN_BEGIN"
+SPLICE_END_MARKER="TI_AUTOGEN_END"
 
+def splice_code(file, section, replacement):
+	if not os.path.exists(file):
+		return False
+
+	with open(file, 'r') as fd:
+		contents = fd.read()
+
+		# want to preserve this as part of the preamble
+		start_search = "//##%s %s" % (SPLICE_START_MARKER, section)
+		start_marker = contents.find(start_search)
+		if start_marker == -1:
+			return False
+
+		end_marker = contents.find("//##%s %s" % (SPLICE_END_MARKER, section), start_marker)
+		if end_marker == -1:
+			print "[ERROR] Couldn't splice section %s in %s: No end marker" % (section, file)
+			return False
+
+		preamble = contents[0:start_marker+len(start_search)] + "\n"
+		appendix = contents[end_marker:]
+
+		new_contents = preamble + replacement + appendix
+
+	if contents != new_contents:
+		with open(file, 'w') as fd:
+			fd.write(new_contents)
+			return True
+
+	return False
+	
 if __name__ == '__main__':
 	manifest,mf = validate_manifest()
 	validate_license()
