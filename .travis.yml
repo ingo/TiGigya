@@ -3,9 +3,9 @@ env:
  global:
    - "ARTIFACTS_AWS_REGION=us-east-1"
    - "ARTIFACTS_S3_BUCKET=builds.appcelerator.com"
-   - "MODULE_NAME=ti.map"
+   - "MODULE_NAME=gigya"
 before_install:
-    - MODULE_ROOT=$PWD
+    - MODULE_ROOT="$PWD/mobile"
 install:
     - cd $MODULE_ROOT
     - curl -o install.sh https://raw.githubusercontent.com/appcelerator-modules/ci/master/travis/install.sh
