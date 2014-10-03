@@ -8,11 +8,11 @@ before_install:
     - MODULE_ROOT="$PWD/mobile"
 install:
     - cd $MODULE_ROOT
-    - curl -o install.sh https://raw.githubusercontent.com/appcelerator-modules/ci/master/travis/install.sh
+    - curl -o install.sh https://raw.githubusercontent.com/appcelerator-modules/ci/test/travis/install.sh
     - source install.sh -s "3.4.0.GA"
 script: 
-    - curl -o script.sh https://raw.githubusercontent.com/appcelerator-modules/ci/master/travis/script.sh
+    - curl -o script.sh https://raw.githubusercontent.com/appcelerator-modules/ci/test/travis/script.sh
     - source script.sh
 after_success: # and this only on success
-  - curl -o deploy.sh https://raw.githubusercontent.com/appcelerator-modules/ci/master/travis/deploy.sh
+  - curl -o deploy.sh https://raw.githubusercontent.com/appcelerator-modules/ci/test/travis/deploy.sh
   - source deploy.sh
