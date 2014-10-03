@@ -95,8 +95,6 @@ def compile_js(manifest,config):
 	return filterDataInRange([NSData dataWithBytesNoCopy:data length:sizeof(data) freeWhenDone:NO], ranges[index.integerValue]);
 """ % module_assets
 
-	from tools import splice_code
-
 	assets_router = os.path.join(cwd,'Classes','ComAppersonlabsGigyaModuleAssets.m')
 	splice_code(assets_router, 'asset', root_asset_content)
 	splice_code(assets_router, 'resolve_asset', module_asset_content)
@@ -162,7 +160,7 @@ def glob_libfiles():
 	return files
 
 def build_module(manifest,config):
-	from tools import ensure_dev_path
+
 	ensure_dev_path()
 
 	rc = os.system("xcodebuild -sdk iphoneos -configuration Release")
