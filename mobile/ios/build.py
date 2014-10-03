@@ -163,10 +163,10 @@ def build_module(manifest,config):
 
 	ensure_dev_path()
 
-	rc = os.system("xcodebuild -sdk iphoneos -configuration Release")
+	rc = os.system("xcodebuild -sdk iphoneos -configuration Release -xcconfig travis.xcconfig")
 	if rc != 0:
 		die("xcodebuild failed")
-	rc = os.system("xcodebuild -sdk iphonesimulator -configuration Release")
+	rc = os.system("xcodebuild -sdk iphonesimulator -configuration Release -xcconfig travis.xcconfig")
 	if rc != 0:
 		die("xcodebuild failed")
     # build the merged library using lipo
@@ -264,7 +264,7 @@ if __name__ == '__main__':
 	validate_license()
 	config = read_ti_xcconfig()
 
-	sdk = find_sdk(config)
+	sdk = os.getenv('TITANIUM_SDK')
 	sys.path.insert(0,os.path.join(sdk,'iphone'))
 	sys.path.append(os.path.join(sdk, "common"))
 
